@@ -12,6 +12,7 @@
     <br>
     <label for="email">Email:</label>
     <input id="email" name="email" type="email">
+    <p id="message"></p>
     <br>
     <label for="password">Password:</label>
     <input id="password" name="password" type="password">
@@ -21,4 +22,16 @@
     <br>
     <input type="submit" value="Sign Up">
 </form>
+<script>
+    let emailInput = document.querySelector('#email');
+    let message = document.querySelector("#message");
+
+    emailInput.addEventListener('input', checkUniqueEmail);
+
+    function checkUniqueEmail() {
+        let response = await fetch();
+
+        message.textContent = emailInput.value;
+    }
+</script>
 {% endblock %}
