@@ -1,0 +1,27 @@
+{% extends '_layout.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>title</th>
+        <th>genre</th>
+        <th>date</th>
+        <th>Actions</th>
+    </tr>
+    {% for row in result %}
+    <tr>
+        <td>{{ row.title }}</td>
+        <td>{{ row.genre }}</td>
+        <td>{{ row.year }}</td>
+        <td>
+            <a href="/view?id={{ row.id }}">dont click</a>
+            <a href="/edit?id={{ row.id }}">Edit</a>
+            <a href="/delete?id={{ row.id }}" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('movie_add') }}">Add a movie</a>
+{% endblock %}

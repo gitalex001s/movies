@@ -1,0 +1,21 @@
+`{% extends '_layout.html' %}
+
+{% block title %}Add a movie{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    <label for="title">title:</label>
+    <input id="title" name="title">
+    <br>
+    <label for="gene">Genre:</label>
+    <input id="genre" name="genre">
+    <br>
+    <label for="year">year:</label>
+    <input id="year" name="year" type="number">
+    <br>
+    <label for="poster">movie poster:</label>
+    <input id="poster" type="file" name="poster">
+    <br>
+    <input type="submit" value="Add">
+</form>
+{% endblock %}

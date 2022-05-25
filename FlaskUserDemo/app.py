@@ -22,7 +22,39 @@ def restrict():
     if 'logged_in' not in session and request.endpoint in restricted_pages:
         return redirect('/login')
 
-# TODO: Add a '/register' (add_user) route that uses INSERT
+@app.route('/addmovie', methods=['GET', 'POST'])
+def movie_add():
+    if request.method == 'POST':
+
+        if request.files['poster'].filename:
+            poster_image = request.files["poster"]
+            ext = os.path.splitext(poster_image.filename)[1]
+            poster_filename = str(uuid.uuid4())[:8] + ext
+            poster_image.save("static/images/" + poster_filename)
+        else:
+            poster_filename = None
+
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = """INSERT INTO movies
+                    (title, gene, year, poster)
+                    VALUES (%s, %s, %s, %s)
+                """
+                values = (
+                    request.form['title'],
+                    request.form['gene'],
+                    request.form['year'],
+                    poster_filename
+                )
+                try:
+                    cursor.execute(sql, values)
+                    connection.commit()
+                except pymysql.err.IntegrityError:
+                    flash('taken')
+                    return redirect(url_for('movie_add'))
+        return redirect('/')
+    return render_template('movie_add.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def add_user():
     if request.method == 'POST':
@@ -71,6 +103,14 @@ def list_users():
             result = cursor.fetchall()
     return render_template('users_list.html', result=result)
 
+@app.route('/movies')
+def list_movies():
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM movies")
+            result = cursor.fetchall()
+    return render_template('movie_list.html', result=result)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -117,6 +157,14 @@ def delete_user():
             cursor.execute("DELETE FROM users WHERE id=%s", request.args['id'])
             connection.commit()
     return redirect('/dashboard')
+
+@app.route('/deletem')
+def delete_movie():
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM movies WHERE movie_id=%s", request.args['movie_id'])
+            connection.commit()
+    return redirect('/movies')
 
 @app.route('/checkemail')
 def check_email():
