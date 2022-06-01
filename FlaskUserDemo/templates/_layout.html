@@ -9,20 +9,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap" rel="stylesheet">
 </head>
-<body>
-    <nav>
+<body id="b">
+    <ul class="horizontal ws-black">
+        <li><a class="active" href="/">index</a></li>
+        <li><a href="/dashboard">list user</a></li>
+        <li><a href="/movies">list movie</a></li>
+        <li class="rightli" style="float:right"><a href="/">my list</a></li>
         {% if 'logged_in' in session %}
         You are logged in as {{ session.first_name }}! <a href="/logout">logout</a>
         {% else %}
-        <a href="/login">Login</a>
+        <li><a href="/login">Login</a></li>
         {% endif %}
-    </nav>
-    {% block content %}
-    {% endblock %}
-    <ul>
-    {% for message in get_flashed_messages() %}
-    <li>{{ message }}</li>
-    {% endfor %}
+        {% block content %}
+        {% endblock %}
+        {% for message in get_flashed_messages() %}
+        <li>{{ message }}</li>
+        {% endfor %}
     </ul>
 </body>
 </html>

@@ -166,6 +166,23 @@ def delete_movie():
             connection.commit()
     return redirect('/movies')
 
+@app.route('/watchmovie')
+def watch_movie():
+
+    if session['role'] != 'admin' and str(session['id']) != request.args['user_id']:
+        return abort(404)
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO users_movies (user_id, movie_id) VALUES (%s, %s)"
+            values = (
+                request.args['user_id'],
+                request.args['movie_id']
+            )
+            cursor.execute(sql, values)
+            connection.commit()
+
+    return redirect(url_for('home'))
+
 @app.route('/checkemail')
 def check_email():
     return jsonify({ status: 'OK'})
@@ -211,7 +228,7 @@ def edit_user():
     else:
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM users WHERE id = %s", request.args['id'])
+                cursor.execute1("SELECT * FROM users WHERE id = %s", request.args['id'])
                 result = cursor.fetchone()
         return render_template('users_edit.html', result=result)
 
