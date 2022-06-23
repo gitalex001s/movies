@@ -28,7 +28,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.py" />
-    <Compile Include="templates\movie_add.html">
+    <Compile Include="templates\subject_add.html">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="utils.py">
@@ -46,16 +46,16 @@
     <Content Include="templates\login.html">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="templates\movie_list.html">
+    <Content Include="templates\subject_list.html">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="templates\movie_view.html">
+    <Content Include="templates\subject_view.html">
       <SubType>Code</SubType>
     </Content>
     <Content Include="templates\setup.html" />
-    <Content Include="templates\users_add.html" />
-    <Content Include="templates\users_list.html" />
-    <Content Include="templates\users_view.html" />
+    <Content Include="templates\students_add.html" />
+    <Content Include="templates\students_list.html" />
+    <Content Include="templates\students_view.html" />
     <Content Include="templates\_layout.html" />
   </ItemGroup>
   <ItemGroup>

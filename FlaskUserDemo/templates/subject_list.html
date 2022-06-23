@@ -5,15 +5,15 @@
 {% block content %}
 <table>
     <tr>
-        <th>title</th>
-        <th>genre</th>
-        <th>date</th>
+        <th>Name</th>
+        <th>Code</th>
+        <th>year</th>
         <th>Actions</th>
     </tr>
     {% for row in result %}
     <tr>
-        <td>{{ row.title }}</td>
-        <td>{{ row.genre }}</td>
+        <td>{{ row.Name }}</td>
+        <td>{{ row.Code }}</td>
         <td>{{ row.year }}</td>
         <td>
             <a href="/view?id={{ row.id }}">dont click</a>
@@ -23,5 +23,5 @@
     </tr>
     {% endfor %}
 </table>
-<a href="{{ url_for('movie_add') }}">Add a movie</a>
+<a href="{{ url_for('subject_add') }}">Add a subject</a>
 {% endblock %}

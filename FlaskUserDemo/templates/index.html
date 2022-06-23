@@ -3,11 +3,11 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('add_user') }}">Sign Up</a>
+<a href="{{ url_for('student_add') }}">Sign Up</a>
 <br>
 {% if session['role'] == 'admin' %}
-<a href="{{ url_for('list_users') }}">View All Users</a>
+<a href="{{ url_for('list_students') }}">View All Users</a>
 {% elif 'logged_in' in session %}
-<a href="{{ url_for('view_user', id=session['id']) }}">View your account</a>
+<a href="{{ url_for('view_students', id=session['id']) }}">View your account</a>
 {% endif %}
 {% endblock %}
