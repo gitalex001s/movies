@@ -14,102 +14,88 @@ def home():
 @app.before_request
 def restrict():
     restricted_pages = [
-        'list_users',
-        'view_user',
-        'edit_user',
-        'delete_user'
+        'list_students',
+        'view_students',
+        'edit_students',
+        'delete_students'
     ]
     if 'logged_in' not in session and request.endpoint in restricted_pages:
         return redirect('/login')
 
-@app.route('/addmovie', methods=['GET', 'POST'])
-def movie_add():
+@app.route('/addsubject', methods=['GET', 'POST'])
+def subject_add():
     if request.method == 'POST':
-
-        if request.files['poster'].filename:
-            poster_image = request.files["poster"]
-            ext = os.path.splitext(poster_image.filename)[1]
-            poster_filename = str(uuid.uuid4())[:8] + ext
-            poster_image.save("static/images/" + poster_filename)
-        else:
-            poster_filename = None
 
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                sql = """INSERT INTO movies
-                    (title, gene, year, poster)
-                    VALUES (%s, %s, %s, %s)
+                sql = """INSERT INTO subjects
+                    (subject_name, subject_code, year)
+                    VALUES (%s, %s, %s)
                 """
                 values = (
-                    request.form['title'],
-                    request.form['gene'],
-                    request.form['year'],
-                    poster_filename
+                    request.form['subject_name'],
+                    request.form['subject_code'],
+                    request.form['year']
                 )
                 try:
                     cursor.execute(sql, values)
                     connection.commit()
                 except pymysql.err.IntegrityError:
                     flash('taken')
-                    return redirect(url_for('movie_add'))
+                    return redirect(url_for('subject_add'))
         return redirect('/')
-    return render_template('movie_add.html')
+    return render_template('subject_add.html')
 
-@app.route('/register', methods=['GET', 'POST'])
-def add_user():
+@app.route('/student_add', methods=['GET', 'POST'])
+def student_add():
     if request.method == 'POST':
 
         password = request.form['password']
         encrypted_password = hashlib.sha256(password.encode()).hexdigest()
 
-        if request.files['avatar'].filename:
-            avatar_image = request.files["avatar"]
-            ext = os.path.splitext(avatar_image.filename)[1]
-            avatar_filename = str(uuid.uuid4())[:8] + ext
-            avatar_image.save("static/images/" + avatar_filename)
-        else:
-            avatar_filename = None
-
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                sql = """INSERT INTO users
-                    (first_name, last_name, email, password, avatar)
-                    VALUES (%s, %s, %s, %s, %s)
+                sql = """INSERT INTO students
+                    (first_name, last_name, email, password)
+                    VALUES (%s, %s, %s, %s)
                 """
                 values = (
                     request.form['first_name'],
                     request.form['last_name'],
                     request.form['email'],
-                    encrypted_password, 
-                    avatar_filename
+                    encrypted_password
                 )
                 try:
                     cursor.execute(sql, values)
                     connection.commit()
+                    session['logged_in'] = True
+                    session['first_name'] = result['first_name']
+                    session['role'] = result['role']
+                    session['id'] = result['id']
                 except pymysql.err.IntegrityError:
                     flash('Email has been taken')
-                    return redirect(url_for('add_user'))
+                    return redirect(url_for('student_add'))
         return redirect('/')
-    return render_template('users_add.html')
+    return render_template('students_add.html')
 
 @app.route('/dashboard')
-def list_users():
+def list_students():
     if session['role'] != 'admin':
         flash("admin only.")
         return abort(404)
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM users")
+            cursor.execute("SELECT * FROM students")
             result = cursor.fetchall()
-    return render_template('users_list.html', result=result)
+    return render_template('students_list.html', result=result)
 
-@app.route('/movies')
-def list_movies():
+@app.route('/subjects')
+def list_subjects():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM movies")
+            cursor.execute("SELECT * FROM subjects")
             result = cursor.fetchall()
-    return render_template('movie_list.html', result=result)
+    return render_template('subject_list.html', result=result)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -118,7 +104,7 @@ def login():
         encrypted_password = hashlib.sha256(password.encode()).hexdigest()
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                sql = "SELECT * FROM users WHERE email=%s AND password=%s"
+                sql = "SELECT * FROM students WHERE email=%s AND password=%s"
                 values = (
                     request.form['email'], 
                     encrypted_password
@@ -143,40 +129,48 @@ def logout():
     return redirect('/')
 
 @app.route('/view')
-def view_user():
+def view_students():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM users WHERE id=%s", request.args['id'])
+            cursor.execute("SELECT * FROM students WHERE id=%s", request.args['id'])
             result = cursor.fetchone()
-    return render_template('users_view.html', result=result)
+    return render_template('students_view.html', result=result)
 
 @app.route('/delete')
-def delete_user():
+def delete_student():
+    if session['role'] != 'admin':
+        error_message=("balls")
+        flash(error_message)
+    return redirect('/')
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM users WHERE id=%s", request.args['id'])
+            cursor.execute("DELETE FROM students WHERE id=%s", request.args['id'])
             connection.commit()
     return redirect('/dashboard')
 
-@app.route('/deletem')
-def delete_movie():
+@app.route('/deletes')
+def delete_subject():
+    if session['role'] != 'admin':
+        error_message=("balls")
+        flash(error_message)
+    return redirect('/')
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM movies WHERE movie_id=%s", request.args['movie_id'])
+            cursor.execute("DELETE FROM subjects WHERE subjects_id=%s", request.args['subjects_id'])
             connection.commit()
-    return redirect('/movies')
+    return redirect('/subjects')
 
-@app.route('/watchmovie')
-def watch_movie():
+@app.route('/studentsubject')
+def student_subjects():
 
-    if session['role'] != 'admin' and str(session['id']) != request.args['user_id']:
+    if session['role'] != 'admin' and str(session['id']) != request.args['students_id']:
         return abort(404)
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO users_movies (user_id, movie_id) VALUES (%s, %s)"
+            sql = "INSERT INTO student_subjects (students_id, subjects_id) VALUES (%s, %s)"
             values = (
-                request.args['user_id'],
-                request.args['movie_id']
+                request.args['students_id'],
+                request.args['subjects_id']
             )
             cursor.execute(sql, values)
             connection.commit()
@@ -188,38 +182,24 @@ def check_email():
     return jsonify({ status: 'OK'})
 
 @app.route('/edit', methods=['GET', 'POST'])
-def edit_user():
+def edit_student():
     if session['role'] != 'admin' and str(session['id']) != request.args['id']:
         return abort(404)
     if request.method == 'POST':
-        
-        if request.files['avatar'].filename:
-            avatar_image = request.files["avatar"]
-            ext = os.path.splitext(avatar_image.filename)[1]
-            avatar_filename = str(uuid.uuid4())[:8] + ext
-            avatar_image.save("static/images/" + avatar_filename)
-            if request.form['old_avatar'] != 'None':
-                os.remove("static/images/" + request.form['old_avatar'])
-        elif request.form['old_avatar'] != 'None':
-            avatar_filename = request.form['old_avatar']
-        else:
-            avatar_filename = None
 
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                sql = """UPDATE users SET
+                sql = """UPDATE students SET
                     first_name = %s,
                     last_name = %s,
                     email = %s,
-                    password = %s,
-                    avatar = %s
+                    password = %s
                 WHERE id = %s"""
                 values = (
                     request.form['first_name'],
                     request.form['last_name'],
                     request.form['email'],
                     request.form['password'],
-                    avatar_filename,
                     request.form['id']
                 )
                 cursor.execute(sql, values)
@@ -228,9 +208,9 @@ def edit_user():
     else:
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                cursor.execute1("SELECT * FROM users WHERE id = %s", request.args['id'])
+                cursor.execute("SELECT * FROM students WHERE id = %s", request.args['id'])
                 result = cursor.fetchone()
-        return render_template('users_edit.html', result=result)
+        return render_template('students_edit.html', result=result)
 
 
 if __name__ == '__main__':

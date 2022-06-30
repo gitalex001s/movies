@@ -1,0 +1,25 @@
+{% extends '_layout.html' %}
+
+{% block title %}Selected Subjects{% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Year</th>
+        <th>Actions</th>
+    </tr>
+    {% for row in result %}
+    <tr>
+        <td>{{ row.Name }}</td>
+        <td>{{ row.code }}</td>
+        <td>{{ row.year }}</td>
+        <td>
+            <a href="/delete?id={{ row.id }}" onclick="return confirm('Are you sure?')">remove</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('subject_select') }}">Add a new subject</a>
+{% endblock %}
