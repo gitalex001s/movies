@@ -68,6 +68,13 @@ def student_add():
                 try:
                     cursor.execute(sql, values)
                     connection.commit()
+                    sql = "SELECT * FROM students WHERE email=%s AND password=%s"
+                    values = (
+                        request.form['email'], 
+                        encrypted_password
+                    )
+                    cursor.execute(sql, values)
+                    result = cursor.fetchone()
                     session['logged_in'] = True
                     session['first_name'] = result['first_name']
                     session['role'] = result['role']
@@ -180,6 +187,15 @@ def student_subjects():
 @app.route('/checkemail')
 def check_email():
     return jsonify({ status: 'OK'})
+
+@app.route('/select')
+def select():
+    with create_connection() as connection:
+        with connection.cursor() as cursor:                
+            cursor.execute("INSERT INTO student_subjects (idstudent,issubject) VALUES (%s,%s)",
+                            (session['id'],request.args['id']))   
+            connection.commit()               
+    return redirect('/studentsubject')
 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit_student():
