@@ -59,6 +59,7 @@
     <Content Include="templates\students_add.html" />
     <Content Include="templates\students_list.html" />
     <Content Include="templates\students_view.html" />
+    <Content Include="templates\students_subject_selection.html" />
     <Content Include="templates\_layout.html" />
   </ItemGroup>
   <ItemGroup>

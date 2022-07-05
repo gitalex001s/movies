@@ -16,12 +16,10 @@
         <td>{{ row.subject_code }}</td>
         <td>{{ row.year }}</td>
         <td>
-            <a href="{{url_for('select', students_id=session['id'], subjects_id=row.id)}}">Select this subject</a>
-            <a href="/edit?id={{ row.id }}">Edit</a>
-            <a href="/delete?id={{ row.id }}" onclick="return confirm('Are you sure?')">Delete</a>
+            <a href="{{url_for('unselect', id=row.id)}}" onclick="return confirm('Are you sure?')">Unselect</a>
         </td>
     </tr>
     {% endfor %}
 </table>
-<a href="{{ url_for('subject_add') }}">Add a subject</a>
+<a href="{{ url_for('list_subjects') }}">Select new subjects</a>
 {% endblock %}

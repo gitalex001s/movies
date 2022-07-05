@@ -146,7 +146,7 @@ def view_students():
 @app.route('/delete')
 def delete_student():
     if session['role'] != 'admin':
-        error_message=("balls")
+        error_message=("NO")
         flash(error_message)
     return redirect('/')
     with create_connection() as connection:
@@ -158,7 +158,7 @@ def delete_student():
 @app.route('/deletes')
 def delete_subject():
     if session['role'] != 'admin':
-        error_message=("balls")
+        error_message=("NO")
         flash(error_message)
     return redirect('/')
     with create_connection() as connection:
@@ -167,22 +167,6 @@ def delete_subject():
             connection.commit()
     return redirect('/subjects')
 
-@app.route('/studentsubject')
-def student_subjects():
-
-    if session['role'] != 'admin' and str(session['id']) != request.args['students_id']:
-        return abort(404)
-    with create_connection() as connection:
-        with connection.cursor() as cursor:
-            sql = "INSERT INTO student_subjects (students_id, subjects_id) VALUES (%s, %s)"
-            values = (
-                request.args['students_id'],
-                request.args['subjects_id']
-            )
-            cursor.execute(sql, values)
-            connection.commit()
-
-    return redirect(url_for('home'))
 
 @app.route('/checkemail')
 def check_email():
@@ -190,12 +174,34 @@ def check_email():
 
 @app.route('/select')
 def select():
+
+    if session['role'] != 'admin' and str(session['id']) != request.args['students_id']:
+        return abort(404)
+
     with create_connection() as connection:
-        with connection.cursor() as cursor:                
-            cursor.execute("INSERT INTO student_subjects (idstudent,issubject) VALUES (%s,%s)",
-                            (session['id'],request.args['id']))   
-            connection.commit()               
-    return redirect('/studentsubject')
+        with connection.cursor() as cursor:   
+            sql = "INSERT INTO student_subjects (idstudent,idsubject) VALUES (%s,%s)"
+            values = (
+                request.args['students_id'],
+                request.args['subjects_id']
+            )
+            cursor.execute(sql,values)
+            connection.commit()
+    return redirect(url_for('list_subject_selections',id=request.args['students_id'] ))
+
+
+# Remove a subject that has been selected
+@app.route('/unselect')
+def unselect():
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            sql = "DELETE FROM student_subjects WHERE id = %s"
+            values = (
+                request.args['id']
+            )
+            cursor.execute(sql, values)
+            connection.commit()
+            return redirect(url_for('list_subject_selections', id=session['id']))
 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit_student():
@@ -228,6 +234,35 @@ def edit_student():
                 result = cursor.fetchone()
         return render_template('students_edit.html', result=result)
 
+# Subject Selection
+
+
+# View students subject choices
+@app.route('/subjectchoices')
+def list_subject_selections():
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            sql = """
+                            SELECT
+	                student_subjects.id, 
+	                student_subjects.idsubject, 
+	                student_subjects.idstudent, 
+	                subjects.subject_name, 
+	                subjects.subject_code, 
+	                subjects.`year`
+                FROM
+	                student_subjects
+	                INNER JOIN
+	                subjects
+	                ON 
+		                student_subjects.idsubject = subjects.id
+                WHERE
+	                student_subjects.idstudent = %s
+            """
+    
+            cursor.execute(sql, request.args['id'])
+            result = cursor.fetchall()
+    return render_template('students_subject_selection.html', result=result)
 
 if __name__ == '__main__':
     import os
