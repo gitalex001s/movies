@@ -203,6 +203,8 @@ def unselect():
             connection.commit()
             return redirect(url_for('list_subject_selections', id=session['id']))
 
+
+#edit a user
 @app.route('/edit', methods=['GET', 'POST'])
 def edit_student():
     if session['role'] != 'admin' and str(session['id']) != request.args['id']:
