@@ -80,7 +80,7 @@ def student_add():
                     session['role'] = result['role']
                     session['id'] = result['id']
                 except pymysql.err.IntegrityError:
-                    flash('Email has been taken')
+                    flash('email is taken!')
                     return redirect(url_for('student_add'))
         return redirect('/')
     return render_template('students_add.html')
@@ -137,6 +137,9 @@ def logout():
 
 @app.route('/view')
 def view_students():
+    if session['role'] != 'admin' and str(session['id']) != request.args['id']:
+        flash("unauthorise!")
+        return redirect("/")
     with create_connection() as connection:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM students WHERE id=%s", request.args['id'])
@@ -208,7 +211,8 @@ def unselect():
 @app.route('/edit', methods=['GET', 'POST'])
 def edit_student():
     if session['role'] != 'admin' and str(session['id']) != request.args['id']:
-        return abort(404)
+        flash("unauthorise!")
+        return redirect("/")
     if request.method == 'POST':
 
         with create_connection() as connection:
@@ -235,6 +239,37 @@ def edit_student():
                 cursor.execute("SELECT * FROM students WHERE id = %s", request.args['id'])
                 result = cursor.fetchone()
         return render_template('students_edit.html', result=result)
+
+
+@app.route('/edits', methods=['GET', 'POST'])
+def edit_subject():
+    if session['role'] != 'admin':
+        flash("unauthorise!")
+        return redirect(url_for('/'))
+    if request.method == 'POST':
+
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = """UPDATE subjects SET
+                    subject_name = %s,
+                    subject_code = %s,
+                    year = %s
+                WHERE id = %s"""
+                values = (
+                    request.form['subject_name'],
+                    request.form['subject_code'],
+                    request.form['year'],
+                    request.form['id']
+                )
+                cursor.execute(sql, values)
+                connection.commit()
+        return redirect('/subjects')
+    else:
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM subjects WHERE id = %s", request.args['id'])
+                result = cursor.fetchone()
+        return render_template('subject_edit.html', result=result)
 
 # Subject Selection
 

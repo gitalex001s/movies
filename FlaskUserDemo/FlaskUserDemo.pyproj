@@ -49,6 +49,10 @@
     <Content Include="templates\studentsubjects.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="templates\subject_edit.html" />
+    <Content Include="templates\students_edit.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="templates\subject_list.html">
       <SubType>Code</SubType>
     </Content>

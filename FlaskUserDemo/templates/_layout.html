@@ -12,7 +12,7 @@
 <body id="b">
     <ul class="horizontal ws-black">
         <li><a class="active" href="/">index</a></li>
-        <li><a href="/student_subjects">my subjects</a></li>
+        <li><a href="/subjectchoices">my subjects</a></li>
         <li><a href="/subjects">subjects</a></li>
         <li class="rightli" style="float:right"><a href="/">my list</a></li>
         {% if 'logged_in' in session %}
@@ -23,7 +23,7 @@
         {% block content %}
         {% endblock %}
         {% for message in get_flashed_messages() %}
-        <li>{{ message }}</li>
+        <p>{{ message }}</p>
         {% endfor %}
     </ul>
 </body>
