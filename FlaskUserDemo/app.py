@@ -151,22 +151,22 @@ def delete_student():
     if session['role'] != 'admin':
         error_message=("NO")
         flash(error_message)
-    return redirect('/')
+        return redirect('/')
     with create_connection() as connection:
         with connection.cursor() as cursor:
             cursor.execute("DELETE FROM students WHERE id=%s", request.args['id'])
             connection.commit()
     return redirect('/dashboard')
 
-@app.route('/deletes')
+@app.route('/removesub')
 def delete_subject():
     if session['role'] != 'admin':
         error_message=("NO")
         flash(error_message)
-    return redirect('/')
+        return redirect('/')
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM subjects WHERE subjects_id=%s", request.args['subjects_id'])
+            cursor.execute("DELETE FROM subjects WHERE id=%s", request.args['id'])
             connection.commit()
     return redirect('/subjects')
 
@@ -212,7 +212,7 @@ def unselect():
 def edit_student():
     if session['role'] != 'admin' and str(session['id']) != request.args['id']:
         flash("unauthorise!")
-        return redirect("/")
+        return redirect('/')
     if request.method == 'POST':
 
         with create_connection() as connection:
@@ -277,6 +277,8 @@ def edit_subject():
 # View students subject choices
 @app.route('/subjectchoices')
 def list_subject_selections():
+    if 'logged_in' not in session:
+        return redirect('/login')
     with create_connection() as connection:
         with connection.cursor() as cursor:
             sql = """
