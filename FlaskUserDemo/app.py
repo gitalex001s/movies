@@ -6,11 +6,14 @@ app = Flask(__name__)
 from utils import create_connection, setup
 app.register_blueprint(setup)
 
-
+#home
 @app.route('/')
 def home():
+    if 'logged_in' not in session:
+        return redirect('/login')
     return render_template("index.html")
 
+# restricted pages
 @app.before_request
 def restrict():
     restricted_pages = [
@@ -22,6 +25,7 @@ def restrict():
     if 'logged_in' not in session and request.endpoint in restricted_pages:
         return redirect('/login')
 
+# adding subjects
 @app.route('/addsubject', methods=['GET', 'POST'])
 def subject_add():
     if request.method == 'POST':
@@ -46,6 +50,7 @@ def subject_add():
         return redirect('/')
     return render_template('subject_add.html')
 
+# a signup page
 @app.route('/student_add', methods=['GET', 'POST'])
 def student_add():
     if request.method == 'POST':
@@ -85,6 +90,7 @@ def student_add():
         return redirect('/')
     return render_template('students_add.html')
 
+# Shows all sutdents (admin only)
 @app.route('/dashboard')
 def list_students():
     if session['role'] != 'admin':
@@ -96,6 +102,7 @@ def list_students():
             result = cursor.fetchall()
     return render_template('students_list.html', result=result)
 
+#Shows a list of subject with actions like select or delete for admins
 @app.route('/subjects')
 def list_subjects():
     with create_connection() as connection:
@@ -104,6 +111,7 @@ def list_subjects():
             result = cursor.fetchall()
     return render_template('subject_list.html', result=result)
 
+#Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -130,11 +138,13 @@ def login():
     else:
         return render_template('login.html')
 
+#logout
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
+# View the profile of a student
 @app.route('/view')
 def view_students():
     if session['role'] != 'admin' and str(session['id']) != request.args['id']:
@@ -146,6 +156,7 @@ def view_students():
             result = cursor.fetchone()
     return render_template('students_view.html', result=result)
 
+# Removes a student
 @app.route('/delete')
 def delete_student():
     if session['role'] != 'admin':
@@ -158,6 +169,7 @@ def delete_student():
             connection.commit()
     return redirect('/dashboard')
 
+# Removes a subject
 @app.route('/removesub')
 def delete_subject():
     if session['role'] != 'admin':
@@ -175,21 +187,32 @@ def delete_subject():
 def check_email():
     return jsonify({ status: 'OK'})
 
+# Add a selected subject
 @app.route('/select')
 def select():
 
     if session['role'] != 'admin' and str(session['id']) != request.args['students_id']:
-        return abort(404)
-
+        return redirect('/login')
+    ids = session['id']
     with create_connection() as connection:
-        with connection.cursor() as cursor:   
-            sql = "INSERT INTO student_subjects (idstudent,idsubject) VALUES (%s,%s)"
-            values = (
-                request.args['students_id'],
-                request.args['subjects_id']
-            )
-            cursor.execute(sql,values)
-            connection.commit()
+        with connection.cursor() as cursor:
+            sql = "SELECT idstudent FROM student_subjects WHERE idstudent=%s"
+            cursor.execute(sql, ids)
+            check=cursor.fetchall()
+            print(check)
+            if len(check) >= 5:
+                flash("already got 5")
+                return redirect(url_for('list_subject_selections',id=request.args['students_id'] ))
+            else:
+                with create_connection() as connection:
+                    with connection.cursor() as cursor:   
+                        sql = "INSERT INTO student_subjects (idstudent,idsubject) VALUES (%s,%s)"
+                        values = (
+                            request.args['students_id'],
+                            request.args['subjects_id']
+                        )
+                        cursor.execute(sql,values)
+                        connection.commit()
     return redirect(url_for('list_subject_selections',id=request.args['students_id'] ))
 
 
@@ -240,7 +263,7 @@ def edit_student():
                 result = cursor.fetchone()
         return render_template('students_edit.html', result=result)
 
-
+# edit a subject
 @app.route('/edits', methods=['GET', 'POST'])
 def edit_subject():
     if session['role'] != 'admin':
@@ -277,7 +300,7 @@ def edit_subject():
 # View students subject choices
 @app.route('/subjectchoices')
 def list_subject_selections():
-    if 'logged_in' not in session:
+    if session['role'] != 'admin' and str(session['id']) != request.args['id']:
         return redirect('/login')
     with create_connection() as connection:
         with connection.cursor() as cursor:
@@ -306,7 +329,7 @@ def list_subject_selections():
 if __name__ == '__main__':
     import os
 
-    # This is required to allow flashing messages. We will cover this later.
+    # This is required to allow flashing messages
     app.secret_key = os.urandom(32)
 
     HOST = os.environ.get('SERVER_HOST', 'localhost')

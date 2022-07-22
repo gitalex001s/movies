@@ -26,6 +26,9 @@
     </tr>
     {% endfor %}
 </table>
+{% if session['role'] == 'admin' %}
 <a href="{{ url_for('subject_add') }}">Add a subject</a>
+{% elif 'logged_in' in session %}
 <a href="{{url_for('list_subject_selections', id=session['id'])}}">view my subjects</a>
+{% endif %}
 {% endblock %}
