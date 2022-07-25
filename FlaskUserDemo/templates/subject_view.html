@@ -9,8 +9,8 @@
 <p><a href="mailto:{{ result.email }}">{{ result.email }}</a></p>
 
 <p>
-    <a class="btn" href="/edits?id={{ result.id }}">Edit</a>
     <a class="btn" href="/removesub?id={{ result.subject_id }}" onclick="return confirm('Are you sure?')">Delete</a>
+    <a class="btn" href="/edits?id={{ result.id }}">Edit</a>
 </p>
 <p>
     <a class="btn" href="{{ url_for('list_students') }}">Back to dashboard</a>

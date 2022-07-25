@@ -1,0 +1,21 @@
+{% extends '_layout.html' %}
+
+{% block title %}Subject students{% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Email</th>
+    </tr>
+    {% for row in result %}
+    <tr>
+        <td>{{ row.first_name }}</td>
+        <td>{{ row.last_name }}</td>
+        <td>{{ row.email }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('list_subjects') }}">list of subjects</a>
+{% endblock %}
