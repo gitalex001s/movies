@@ -2,9 +2,11 @@ import uuid, os, hashlib, pymysql
 from flask import Flask, request, render_template, redirect, session, flash, abort, url_for, jsonify
 app = Flask(__name__)
 
+
 # Register the setup page and import create_connection()
 from utils import create_connection, setup
 app.register_blueprint(setup)
+
 
 #home
 @app.route('/')
@@ -12,6 +14,7 @@ def home():
     if 'logged_in' not in session:
         return redirect('/login')
     return render_template("index.html")
+
 
 # restricted pages
 @app.before_request
@@ -24,6 +27,7 @@ def restrict():
     ]
     if 'logged_in' not in session and request.endpoint in restricted_pages:
         return redirect('/login')
+
 
 # adding subjects
 @app.route('/addsubject', methods=['GET', 'POST'])
@@ -49,6 +53,7 @@ def subject_add():
                     return redirect(url_for('subject_add'))
         return redirect('/')
     return render_template('subject_add.html')
+
 
 # a signup page
 @app.route('/student_add', methods=['GET', 'POST'])
@@ -90,6 +95,7 @@ def student_add():
         return redirect('/')
     return render_template('students_add.html')
 
+
 # Shows all sutdents (admin only)
 @app.route('/dashboard')
 def list_students():
@@ -102,6 +108,7 @@ def list_students():
             result = cursor.fetchall()
     return render_template('students_list.html', result=result)
 
+
 #Shows a list of subject with actions like select or delete for admins
 @app.route('/subjects')
 def list_subjects():
@@ -110,6 +117,7 @@ def list_subjects():
             cursor.execute("SELECT * FROM subjects")
             result = cursor.fetchall()
     return render_template('subject_list.html', result=result)
+
 
 #Login
 @app.route('/login', methods=['GET', 'POST'])
@@ -138,11 +146,13 @@ def login():
     else:
         return render_template('login.html')
 
+
 #logout
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
+
 
 # View the profile of a student
 @app.route('/view')
@@ -156,6 +166,7 @@ def view_students():
             result = cursor.fetchone()
     return render_template('students_view.html', result=result)
 
+
 # Removes a student
 @app.route('/delete')
 def delete_student():
@@ -168,6 +179,7 @@ def delete_student():
             cursor.execute("DELETE FROM students WHERE id=%s", request.args['id'])
             connection.commit()
     return redirect('/dashboard')
+
 
 # Removes a subject
 @app.route('/removesub')
@@ -186,6 +198,7 @@ def delete_subject():
 @app.route('/checkemail')
 def check_email():
     return jsonify({ status: 'OK'})
+
 
 # Add a selected subject
 @app.route('/select')
@@ -263,6 +276,7 @@ def edit_student():
                 result = cursor.fetchone()
         return render_template('students_edit.html', result=result)
 
+
 # edit a subject
 @app.route('/edits', methods=['GET', 'POST'])
 def edit_subject():
@@ -294,9 +308,8 @@ def edit_subject():
                 result = cursor.fetchone()
         return render_template('subject_edit.html', result=result)
 
+
 # Subject Selection
-
-
 # View students subject choices
 @app.route('/subjectchoices')
 def list_subject_selections():
@@ -325,6 +338,7 @@ def list_subject_selections():
             cursor.execute(sql, request.args['id'])
             result = cursor.fetchall()
     return render_template('students_subject_selection.html', result=result)
+
 
 if __name__ == '__main__':
     import os
