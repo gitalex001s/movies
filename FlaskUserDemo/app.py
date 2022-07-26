@@ -339,6 +339,8 @@ def list_subject_selections():
             result = cursor.fetchall()
     return render_template('students_subject_selection.html', result=result)
 
+
+# View students for each subject 
 @app.route('/subjectselected')
 def list_subject_student():
     if session['role'] != 'admin':
@@ -350,22 +352,22 @@ def list_subject_student():
 	                student_subjects.id, 
 	                student_subjects.idsubject, 
 	                student_subjects.idstudent, 
-	                subjects.subject_name, 
-	                subjects.subject_code, 
-	                subjects.`year`
+                    students.first_name, 
+                    students.last_name, 
+                    students.email
                 FROM
 	                student_subjects
 	                INNER JOIN
-	                subjects
+	                students
 	                ON 
-		                student_subjects.idsubject = subjects.id
+		                student_subjects.idstudent = students.id
                 WHERE
-	                student_subjects.idstudent = %s
+	                student_subjects.idsubject = %s
             """
     
             cursor.execute(sql, request.args['id'])
             result = cursor.fetchall()
-    return render_template('students_subject_selection.html', result=result)
+    return render_template('subject_student.html', result=result)
 
 if __name__ == '__main__':
     import os

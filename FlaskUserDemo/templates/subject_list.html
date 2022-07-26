@@ -17,7 +17,7 @@
         <td>{{ row.year }}</td>
         <td>
             {% if session['role'] == 'admin' %}
-            <a href="/subjectselected?id={{ result.subject_id }}">view students</a>
+            <a href="/subjectselected?id={{ row.id }}">view students</a>
             <a href="/edits?id={{ row.id }}">Edit</a>
             <a href="/removesub?id={{ row.id }}" onclick="return confirm('Are you sure?')">Delete</a>
             {% elif 'logged_in' in session %}
