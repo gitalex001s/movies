@@ -9,21 +9,30 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap" rel="stylesheet">
 </head>
-<body id="b">
+<body>
+    <div class="bg-img" style="border-bottom: 5px solid green; ">
+        <div class="container">
+            <div class="topnav">
+                <a href="/">Home</a>
+                <a href="subjects">subjects</a>
+                <a href="#contact">Contact</a>
+                <a href="#about">About</a>
+                {% if 'logged_in' in session %}
+                <a href="/edit?id={{ session['id']}}" style="text-align: right; ">list student</a>
+                You are logged in as {{ session.first_name }}!
+                <a href="/logout">logout</a>
+                {% else %}
+                <a href="{{ url_for('student_add') }}">Sign Up</a>
+                <a href="/login">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% block content %}
+    {% endblock %}
     <ul class="horizontal ws-black">
-        <li><a class="active" href="/">Home</a></li>
-        <li><a href="/subjects">subjects</a></li>
-        {% if 'logged_in' in session %}
-        You are logged in as {{ session.first_name }}!
-        <a href="/logout">logout</a>
-        {% else %}
-        <li><a href="/login">Login</a></li>
-        <li><a href="{{ url_for('student_add') }}">Sign Up</a></li>
-        {% endif %}
-        {% block content %}
-        {% endblock %}
         {% for message in get_flashed_messages() %}
-        <p>{{ message }}</p>
+        <li>{{ message }}</li>
         {% endfor %}
     </ul>
 </body>

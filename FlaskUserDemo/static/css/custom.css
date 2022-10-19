@@ -3,7 +3,7 @@ table {
 }
 
 th, td {
-    border: 1px ;
+    border: 1px;
 }
 
 body {
@@ -32,12 +32,68 @@ li {
 a {
     display: block;
     padding: 8px;
-    background-color: #808080;
+    background-color: transparent;
     color: black;
     display: inline-block;
     font-size: 16px;
 }
 
 #b {
+}
+
+ul {
+    list-style-type: none;
+}
+
+.bg-img {
+    /* The image used */
+    background-image: url("../images/60109604.jpg");
+    min-height: 380px;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* Needed to position the navbar */
+    position: relative;
+}
+
+
+.container {
+    position: absolute;
+    margin: 20px;
+    width: 98%;
+}
+
+.topnav {
+    overflow: hidden;
+    background-color: transparent;
+}
+
+    .topnav a {
+        float: left;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+    }
+
+        .topnav a:hover {
+            background-color: gainsboro;
+            color: forestgreen;
+        }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
     background-color: #dddddd;
 }
