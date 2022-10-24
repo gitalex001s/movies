@@ -47,7 +47,7 @@ ul {
 
 .bg-img {
     /* The image used */
-    background-image: url("../images/60109604.jpg");
+    background-image: url("../images/pb.png");
     min-height: 380px;
     /* Center and scale the image nicely */
     background-position: center;
@@ -99,11 +99,14 @@ tr:nth-child(even) {
 }
 
 #owo {
-    background-color: #dddddd;
+    background-color: white;
 }
 
 .center {
     margin: auto;
     width: 50%;
     padding: 10px;
+}
+table, th, td {
+    border: 1px solid;
 }

@@ -14,11 +14,11 @@
         <div class="container">
             <div class="topnav">
                 <a href="/">Home</a>
-                <a href="subjects">subjects</a>
-                <a href="#contact">Contact</a>
-                <a href="#about">About</a>
+                <a href="subjects">Subjects</a>
                 {% if 'logged_in' in session %}
-                <a href="/edit?id={{ session['id']}}" style="text-align: right; ">list student</a>
+                <a href="/view?id={{ session['id']}}">View profile</a>
+                <a href="/subjectchoices?id={{ session['id']}}">Selected subjects</a>
+                
                 You are logged in as {{ session.first_name }}!
                 <a href="/logout">logout</a>
                 {% else %}
@@ -38,7 +38,7 @@
         {% endfor %}
     </ul>
     <footer>
-        <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a><a href="#"><i class="icon ion-social-snapchat"></i></a><a href="#"><i class="icon ion-social-twitter"></i></a><a href="#"><i class="icon ion-social-facebook"></i></a></div>
+        <hr size="1" width="98%" color="black">
         <ul class="list-inline">
             <li class="list-inline-item"><a href="/">Home</a></li>
             <li class="list-inline-item"><a href="#">About</a></li>
